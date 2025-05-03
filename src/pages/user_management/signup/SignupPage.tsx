@@ -1,42 +1,53 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 // Import the shared InputBoxLarge component for text-based inputs
 import { InputBoxLarge } from "../../../shared_components/forms/InputBoxLarge.tsx";
 import {User} from "../../../shared_components/user/IUser.ts";
+import axios, {AxiosResponse} from "axios";
+import {NavigateFunction, useNavigate} from "react-router-dom";
+import {useYourSayUser} from "../../../authentication/context/UserContext.tsx";
+import YourSayUser from "../../../authentication/context/YourSayUser.ts";
 
 const SignUpPage: React.FC = () => {
 
+    const yourSayUserContext = useYourSayUser();
+    const navigate: NavigateFunction = useNavigate();
+
+    useEffect(() => {
+        if (yourSayUserContext.user){
+            navigate("/recommended");
+        }
+    },[])
 
     const [user, setUser] = useState<User>({
         dateOfBirth: "",
         email: "",
         password: "",
-        firstName: "",
-        lastName: "",
+        fName: "",
+        lName: "",
         username: ""
 
     })
 
     const [confirmPassword, setConfirmPassword] = useState<string>("");
-    const [passwordsMatch, setPasswordsMatch] = useState<boolean>(false);
+    const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
 
-
-    function updateConfirmPassword(value: string){
-        if (confirmPassword !== user.password) {
-            setPasswordsMatch(false);
-        }else{
-            setPasswordsMatch(true);
-        }
-
+    function handleConfirmPasswordChange(value: string) {
+        setConfirmPassword(value);
+        setPasswordsMatch(value === user.password);
     }
 
 
-    function handleSignUp(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSignUp(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         if (passwordsMatch){
-            // handle submit
+            console.log(user);
+            const response: AxiosResponse<YourSayUser> = await axios.post("http://localhost:8081/api/your-say-user/sign-up",
+                user, {withCredentials: true});
+            if (response.status === 201){
+                yourSayUserContext.login(response.data);
+                navigate("/");
+            }
         }
-
-
     }
 
     return (
@@ -65,7 +76,7 @@ const SignUpPage: React.FC = () => {
                         <InputBoxLarge
                             placeholder="Confirm Password"
                             value={confirmPassword}
-                            onChange={(value) => setConfirmPassword(value)}
+                            onChange={(value) => handleConfirmPasswordChange(value)}
                             fieldType="password"
                         />
                     </div>
@@ -88,16 +99,16 @@ const SignUpPage: React.FC = () => {
                     <div className="mb-4">
                         <InputBoxLarge
                             placeholder="First Name"
-                            value={user.firstName}
-                            onChange={(value) => setUser({...user, username: value})}
+                            value={user.fName}
+                            onChange={(value) => setUser({...user, fName: value})}
                             fieldType="text"
                         />
                     </div>
                     <div className="mb-4">
                         <InputBoxLarge
                             placeholder="Last Name"
-                            value={user.lastName}
-                            onChange={(value) =>setUser({...user, lastName: value})}
+                            value={user.lName}
+                            onChange={(value) =>setUser({...user, lName: value})}
                             fieldType="text"
                         />
                     </div>
