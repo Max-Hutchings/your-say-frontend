@@ -2,6 +2,7 @@ import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import YourSayUser from "./YourSayUser.ts";
 import axios, {AxiosResponse} from "axios";
 import {NavigateFunction, useNavigate} from "react-router-dom";
+import checkLoggedInAPIClient from "./CheckLoggedInAPIClient.ts";
 
 export interface AuthContextType {
     user: YourSayUser | null;
@@ -27,10 +28,8 @@ export const UserContextProvider: React.FC<{children: ReactNode}> = ({children})
 
     async function checkAuthenticated():Promise<void>{
         try{
-            const response: AxiosResponse = await axios.get("http://localhost:8081/api/your-say-user/check-logged-in", {withCredentials: true});
+            const response: AxiosResponse = await checkLoggedInAPIClient();
             if (response.status === 200) {
-                console.log("Authentication successful");
-                console.log(response.data);
                 setUser(response.data);
             }
             setLoadingUser(false);

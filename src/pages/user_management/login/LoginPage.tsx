@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {InputBoxLarge} from "../../../shared_components/forms/InputBoxLarge.tsx";
-import axios, {AxiosResponse} from "axios";
+import {AxiosResponse} from "axios";
 import {NavigateFunction, useNavigate} from "react-router-dom";
 import {AuthContextType, useYourSayUser} from "../../../authentication/context/UserContext.tsx";
+import loginUserAPIClient from "./LoginUserAPIClient.ts";
 
 
 const LoginPage: React.FC = () => {
@@ -22,14 +23,8 @@ const LoginPage: React.FC = () => {
     // Handle form submission
     async function handleLogin(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
-
-        const response: AxiosResponse = await axios.post("http://localhost:8081/api/your-say-user/login", {
-            "email": email,
-            "password": password,
-        }, {withCredentials: true});
-        console.log(response)
+        const response: AxiosResponse = await loginUserAPIClient(password, email);
         if (response.status === 200){
-            userContext.login(response.data);
             navigate("/recommended");
         }
     };

@@ -2,10 +2,11 @@ import React, {useEffect, useState} from "react";
 // Import the shared InputBoxLarge component for text-based inputs
 import { InputBoxLarge } from "../../../shared_components/forms/InputBoxLarge.tsx";
 import {User} from "../../../shared_components/user/IUser.ts";
-import axios, {AxiosResponse} from "axios";
+import {AxiosResponse} from "axios";
 import {NavigateFunction, useNavigate} from "react-router-dom";
 import {useYourSayUser} from "../../../authentication/context/UserContext.tsx";
-import YourSayUser from "../../../authentication/context/YourSayUser.ts";
+
+import SignUpUserAPIClient from "./SignUpUserAPIClient.ts";
 
 const SignUpPage: React.FC = () => {
 
@@ -41,8 +42,7 @@ const SignUpPage: React.FC = () => {
         e.preventDefault();
         if (passwordsMatch){
             console.log(user);
-            const response: AxiosResponse<YourSayUser> = await axios.post("http://localhost:8081/api/your-say-user/sign-up",
-                user, {withCredentials: true});
+            const response: AxiosResponse = await SignUpUserAPIClient(user);
             if (response.status === 201){
                 yourSayUserContext.login(response.data);
                 navigate("/");
