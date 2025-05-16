@@ -1,7 +1,6 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import YourSayUser from "./YourSayUser.ts";
-import axios, {AxiosResponse} from "axios";
-import {NavigateFunction, useNavigate} from "react-router-dom";
+import {AxiosResponse} from "axios";
 import checkLoggedInAPIClient from "./CheckLoggedInAPIClient.ts";
 
 export interface AuthContextType {
